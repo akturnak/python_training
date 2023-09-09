@@ -1,4 +1,5 @@
 import time
+from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 import functools
 import asyncio
@@ -19,14 +20,11 @@ def partition(data: List,
         yield data[i:i + chunk_size]
 
 
-def map_frequencies(chunk: List[str]) -> Dict[str, int]:
-    counter = {}
+def map_frequencies(chunk: List[str]) -> Counter:
+    counter = Counter()
     for line in chunk:
         word, _, count, _ = line.split('\t')
-        if counter.get(word):
-            counter[word] = counter[word] + int(count)
-        else:
-            counter[word] = int(count)
+        counter[word] += int(count)
 
     with map_progress.get_lock():
         map_progress.value += 1
